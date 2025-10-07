@@ -1,205 +1,199 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 
-export default function StudentScreen() {
+export default function EnergyDashboard() {
   const [activeSection, setActiveSection] = useState(null);
-
-  const materias = ['Matemáticas', 'Programación', 'Física', 'Historia', 'Inglés'];
-
-  const horarios = [
-    { dia: 'Lunes', materia: 'Matemáticas', horario: '8:00 - 10:00', aula: 'Aula 101' },
-    { dia: 'Lunes', materia: 'Inglés', horario: '10:00 - 12:00', aula: 'Aula 102' },
-    { dia: 'Martes', materia: 'Programación', horario: '9:00 - 11:00', aula: 'Aula 203' },
-    { dia: 'Miércoles', materia: 'Física', horario: '11:00 - 13:00', aula: 'Aula 305' },
-    { dia: 'Jueves', materia: 'Historia', horario: '8:00 - 10:00', aula: 'Aula 404' },
-    { dia: 'Viernes', materia: 'Matemáticas', horario: '10:00 - 12:00', aula: 'Aula 101' },
-  ];
-
-  const calificaciones = {
-    'Matemáticas': [90, 85, null],
-    'Programación': [95, 92, null],
-    'Física': [80, 78, null],
-    'Historia': [88, 90, null],
-    'Inglés': [92, 94, null],
-  };
 
   const toggleSection = (section) => {
     setActiveSection(activeSection === section ? null : section);
   };
 
+  // Datos simulados
+  const consumoTiempoReal = {
+    total: "450 kW",
+    eficiencia: "82%",
+    estado: "Estable",
+  };
+
+  const alertas = [
+    { tipo: "Sobreconsumo", mensaje: "Motor principal superó los 500 kW", nivel: "⚠️" },
+    { tipo: "Fallo eléctrico", mensaje: "Anomalía detectada en sala de máquinas", nivel: "❌" },
+  ];
+
+  const historial = [
+    { fecha: "01/10/2025", trayecto: "Puerto A → Puerto B", consumo: "1200 kW" },
+    { fecha: "28/09/2025", trayecto: "Puerto B → Puerto C", consumo: "980 kW" },
+    { fecha: "25/09/2025", trayecto: "Ruta interna", consumo: "600 kW" },
+  ];
+
+  const recomendaciones = [
+    "Reducir velocidad en trayectos cortos para optimizar consumo",
+    "Verificar aislamiento eléctrico en generadores",
+    "Programar mantenimiento preventivo mensual",
+  ];
+
+  const sensores = [
+    { zona: "Sala de máquinas", voltaje: "220V", consumo: "300 kW" },
+    { zona: "Cubierta superior", voltaje: "110V", consumo: "80 kW" },
+    { zona: "Sistema climatización", voltaje: "220V", consumo: "70 kW" },
+  ];
+
+  const flotas = [
+    { barco: "Nautilus I", eficiencia: "85%", huella: "Baja" },
+    { barco: "Poseidón", eficiencia: "78%", huella: "Media" },
+    { barco: "Ocean Explorer", eficiencia: "90%", huella: "Muy baja" },
+  ];
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Panel del Estudiante</Text>
+      <Text style={styles.title}>🌊 Panel Energético IoT</Text>
 
-      {/* Materias */}
-      <TouchableOpacity style={styles.card} onPress={() => toggleSection('materias')}>
-        <Text style={styles.cardTitle}>📚 Materias</Text>
-        {activeSection === 'materias' && (
-          <View style={styles.tableBox}>
-            {materias.map((mat, index) => (
-              <View key={index} style={styles.tableRow}>
-                <Text style={styles.tableCell}>{index + 1}</Text>
-                <Text style={styles.tableCell}>{mat}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-      </TouchableOpacity>
+      {/* Consumo en tiempo real */}
+      <SectionCard title="📊 Consumo en tiempo real" section="tiempoReal" activeSection={activeSection} toggleSection={toggleSection}>
+        <View style={styles.infoBox}>
+          <Text style={styles.bigText}>{consumoTiempoReal.total}</Text>
+          <Text style={styles.infoText}>Eficiencia: {consumoTiempoReal.eficiencia}</Text>
+          <Text style={styles.infoText}>Estado: {consumoTiempoReal.estado}</Text>
+        </View>
+      </SectionCard>
 
-      {/* Horarios y aulas */}
-      <TouchableOpacity style={styles.card} onPress={() => toggleSection('horarios')}>
-        <Text style={styles.cardTitle}>📅 Horarios y aulas</Text>
-        {activeSection === 'horarios' && (
-          <View style={styles.tableBox}>
-            {/* Agrupamos por días */}
-            {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].map((dia) => (
-              <View key={dia} style={{ marginBottom: 10 }}>
-                <Text style={styles.dayTitle}>{dia}</Text>
-                <View style={[styles.tableRow, styles.tableHeader]}>
-                  <Text style={[styles.tableCell, styles.headerText]}>Materia</Text>
-                  <Text style={[styles.tableCell, styles.headerText]}>Horario</Text>
-                  <Text style={[styles.tableCell, styles.headerText]}>Aula</Text>
-                </View>
-                {horarios
-                  .filter((item) => item.dia === dia)
-                  .map((item, index) => (
-                    <View key={index} style={styles.tableRow}>
-                      <Text style={styles.tableCell}>{item.materia}</Text>
-                      <Text style={styles.tableCell}>{item.horario}</Text>
-                      <Text style={styles.tableCell}>{item.aula}</Text>
-                    </View>
-                  ))}
-              </View>
-            ))}
+      {/* Alertas */}
+      <SectionCard title="⚠️ Alertas Inteligentes" section="alertas" activeSection={activeSection} toggleSection={toggleSection}>
+        {alertas.map((a, i) => (
+          <View key={i} style={styles.alertBox}>
+            <Text style={styles.alertTitle}>{a.nivel} {a.tipo}</Text>
+            <Text style={styles.alertText}>{a.mensaje}</Text>
           </View>
-        )}
-      </TouchableOpacity>
+        ))}
+      </SectionCard>
 
-      {/* Calificaciones */}
-      <TouchableOpacity style={styles.card} onPress={() => toggleSection('calificaciones')}>
-        <Text style={styles.cardTitle}>📝 Calificaciones</Text>
-        {activeSection === 'calificaciones' && (
-          <View style={styles.tableBox}>
-            <View style={[styles.tableRow, styles.tableHeader]}>
-              <Text style={[styles.tableCell, styles.headerText]}>Materia</Text>
-              <Text style={[styles.tableCell, styles.headerText]}>Parcial 1</Text>
-              <Text style={[styles.tableCell, styles.headerText]}>Parcial 2</Text>
-              <Text style={[styles.tableCell, styles.headerText]}>Parcial 3</Text>
-            </View>
-            {Object.entries(calificaciones).map(([materia, notas], index) => (
-              <View key={index} style={styles.tableRow}>
-                <Text style={styles.tableCell}>{materia}</Text>
-                <Text style={styles.tableCell}>{notas[0] ?? '-'}</Text>
-                <Text style={styles.tableCell}>{notas[1] ?? '-'}</Text>
-                <Text style={styles.tableCell}>{notas[2] ?? '-'}</Text>
-              </View>
-            ))}
+      {/* Historial */}
+      <SectionCard title="📜 Historial de Consumo" section="historial" activeSection={activeSection} toggleSection={toggleSection}>
+        {historial.map((h, i) => (
+          <View key={i} style={styles.tableRow}>
+            <Text style={styles.tableCell}>{h.fecha}</Text>
+            <Text style={styles.tableCell}>{h.trayecto}</Text>
+            <Text style={styles.tableCell}>{h.consumo}</Text>
           </View>
-        )}
-      </TouchableOpacity>
+        ))}
+      </SectionCard>
 
-      {/* Subir tareas */}
-      <TouchableOpacity style={styles.card} onPress={() => toggleSection('tareas')}>
-        <Text style={styles.cardTitle}>⬆️ Subir tareas</Text>
-        {activeSection === 'tareas' && (
-          <View style={styles.infoBox}>
-            <Text style={styles.infoText}>Arrastra tus archivos aquí 📂</Text>
-            <Text style={styles.infoText}>O presiona para seleccionar un archivo</Text>
-            <View style={styles.uploadBox}>
-              <Text style={styles.uploadText}>[ Zona de carga simulada ]</Text>
-            </View>
+      {/* Recomendaciones */}
+      <SectionCard title="💡 Recomendaciones" section="recomendaciones" activeSection={activeSection} toggleSection={toggleSection}>
+        {recomendaciones.map((r, i) => (
+          <Text key={i} style={styles.infoText}>• {r}</Text>
+        ))}
+      </SectionCard>
+
+      {/* Diagnóstico Técnico */}
+      <SectionCard title="🛠️ Diagnóstico Técnico" section="tecnicos" activeSection={activeSection} toggleSection={toggleSection}>
+        {sensores.map((s, i) => (
+          <View key={i} style={styles.tableRow}>
+            <Text style={styles.tableCell}>{s.zona}</Text>
+            <Text style={styles.tableCell}>{s.voltaje}</Text>
+            <Text style={styles.tableCell}>{s.consumo}</Text>
           </View>
-        )}
-      </TouchableOpacity>
+        ))}
+      </SectionCard>
+
+      {/* Flotas */}
+      <SectionCard title="⚓ Gestión de Flotas y Sostenibilidad" section="flotas" activeSection={activeSection} toggleSection={toggleSection}>
+        {flotas.map((f, i) => (
+          <View key={i} style={styles.tableRow}>
+            <Text style={styles.tableCell}>{f.barco}</Text>
+            <Text style={styles.tableCell}>{f.eficiencia}</Text>
+            <Text style={styles.tableCell}>{f.huella}</Text>
+          </View>
+        ))}
+      </SectionCard>
     </ScrollView>
+  );
+}
+
+function SectionCard({ title, section, activeSection, toggleSection, children }) {
+  return (
+    <TouchableOpacity style={styles.card} onPress={() => toggleSection(section)}>
+      <Text style={styles.cardTitle}>{title}</Text>
+      {activeSection === section && <View style={styles.cardContent}>{children}</View>}
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#f4f6fc',
-    alignItems: 'center',
-    paddingVertical: 30,
+    backgroundColor: "#f5f9ff",
+    alignItems: "center",
+    paddingVertical: 25,
   },
   title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 25,
-    color: '#1e3d59',
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#003366",
   },
   card: {
-    backgroundColor: '#ffffff',
-    width: '90%',
-    padding: 20,
-    borderRadius: 15,
-    marginVertical: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: "#fff",
+    width: "90%",
+    padding: 18,
+    borderRadius: 14,
+    marginVertical: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
   },
   cardTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#007bff',
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#007bff",
+    marginBottom: 8,
   },
-  dayTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginVertical: 5,
-    color: '#1e3d59',
-  },
-  tableBox: {
+  cardContent: {
     marginTop: 10,
-    backgroundColor: '#eef3fc',
+  },
+  infoBox: {
+    backgroundColor: "#eef6ff",
+    padding: 15,
     borderRadius: 10,
-    padding: 10,
+    alignItems: "center",
+  },
+  bigText: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#003366",
+  },
+  infoText: {
+    fontSize: 15,
+    marginTop: 4,
+    color: "#333",
+    textAlign: "center",
+  },
+  alertBox: {
+    backgroundColor: "#ffe6e6",
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 8,
+  },
+  alertTitle: {
+    fontWeight: "bold",
+    color: "#cc0000",
+    marginBottom: 2,
+  },
+  alertText: {
+    fontSize: 14,
+    color: "#333",
   },
   tableRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    paddingVertical: 8,
-  },
-  tableHeader: {
-    backgroundColor: '#dbe7ff',
-    borderBottomWidth: 2,
+    borderBottomColor: "#ddd",
+    paddingVertical: 6,
   },
   tableCell: {
     flex: 1,
-    textAlign: 'center',
-    fontSize: 14,
-    color: '#333',
-  },
-  headerText: {
-    fontWeight: 'bold',
-    color: '#1e3d59',
-  },
-  infoBox: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: '#eef3fc',
-    borderRadius: 10,
-  },
-  infoText: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: '#333',
-    textAlign: 'center',
-  },
-  uploadBox: {
-    marginTop: 10,
-    padding: 20,
-    borderWidth: 2,
-    borderColor: '#007bff',
-    borderStyle: 'dashed',
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  uploadText: {
-    fontSize: 14,
-    color: '#007bff',
+    textAlign: "center",
+    fontSize: 13,
+    color: "#333",
   },
 });
